@@ -24,6 +24,6 @@ public class MemberController {
     @PostMapping("/signup")
     public ResponseEntity<CommonResponseFormat> signup(@Valid @RequestBody SignupRequest signupRequest) {
         memberService.signup(signupRequest);
-        return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.OK);
+        return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.CREATED);
     }
 }
