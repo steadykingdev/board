@@ -1,6 +1,6 @@
-package com.study.board.controller.domain.dto;
+package com.study.board.domain.dto;
 
-import com.study.board.controller.domain.Role;
+import com.study.board.domain.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;

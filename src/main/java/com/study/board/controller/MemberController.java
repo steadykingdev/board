@@ -1,7 +1,9 @@
 package com.study.board.controller;
 
-import com.study.board.dto.CommonResponseFormat;
-import com.study.board.dto.SignupRequest;
+import com.study.board.domain.dto.CommonResponseFormat;
+import com.study.board.domain.dto.JwtResponse;
+import com.study.board.domain.dto.LoginRequest;
+import com.study.board.domain.dto.SignupRequest;
 import com.study.board.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,8 +24,15 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponseFormat> signup(@Valid @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<CommonResponseFormat> signup(@RequestBody @Valid SignupRequest signupRequest) {
         memberService.signup(signupRequest);
         return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<CommonResponseFormat> login(@RequestBody @Valid LoginRequest loginRequest) {
+        String token = memberService.login(loginRequest);
+        JwtResponse jwtResponse = new JwtResponse("Bearer " + token);
+        return new ResponseEntity<>(CommonResponseFormat.createSuccess(jwtResponse), HttpStatus.OK);
     }
 }
