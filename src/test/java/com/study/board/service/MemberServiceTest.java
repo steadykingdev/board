@@ -1,7 +1,8 @@
 package com.study.board.service;
 
-import com.study.board.dto.SignupRequest;
-import com.study.board.entity.Member;
+import com.study.board.domain.Role;
+import com.study.board.domain.dto.SignupRequest;
+import com.study.board.domain.entity.Member;
 import com.study.board.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,9 @@ class MemberServiceTest {
         ReflectionTestUtils.setField(signupRequest, "password", "1q2w3e4r!@");
         ReflectionTestUtils.setField(signupRequest, "passwordCheck", "1q2w3e4r!@");
         ReflectionTestUtils.setField(signupRequest, "nickname", "테스터");
+        ReflectionTestUtils.setField(signupRequest, "role", Role.ROLE_USER);
 
-        Member member = new Member(signupRequest.getLoginId(), signupRequest.getPassword(), signupRequest.getNickname());
+        Member member = new Member(signupRequest.getLoginId(), signupRequest.getPassword(), signupRequest.getNickname(), signupRequest.getRole());
 
         //when
         when(memberRepository.existsByLoginId(anyString())).thenReturn(false);
@@ -46,6 +48,7 @@ class MemberServiceTest {
         assertThat(savedMember.getLoginId()).isEqualTo(signupRequest.getLoginId());
         assertThat(savedMember.getPassword()).isEqualTo(signupRequest.getPassword());
         assertThat(savedMember.getNickname()).isEqualTo(signupRequest.getNickname());
+        assertThat(savedMember.getRole()).isEqualTo(signupRequest.getRole());
 
         verify(memberRepository, times(1)).save(any(Member.class));     // 한번만 수행했는지 검증
         verify(memberRepository, times(1)).existsByLoginId(anyString());// 한번만 수행했는지 검증

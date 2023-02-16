@@ -1,6 +1,7 @@
 package com.study.board.controller;
 
-import com.study.board.dto.SignupRequest;
+import com.study.board.domain.Role;
+import com.study.board.domain.dto.SignupRequest;
 import com.study.board.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,13 +44,13 @@ class MemberControllerTest {
     @Test
     public void signupTest() throws Exception {
         //given
-        String content = "{\"loginId\": \"testMember\", \"password\" : \"1q2w3e4r!@\", \"passwordCheck\" :  \"1q2w3e4r!@\", \"nickname\" :  \"테스터\"}";
+        String content = "{\"loginId\": \"testMember\", \"password\" : \"1q2w3e4r!@\", \"passwordCheck\" :  \"1q2w3e4r!@\", \"nickname\" :  \"테스터\", \"role\" : \"ROLE_USER\"}";
 
         //when
         mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
 
         //then
         verify(memberService).signup(signupRequestCaptor.capture());
@@ -58,13 +59,14 @@ class MemberControllerTest {
         assertThat(capturedSignupRequest.getPassword()).isEqualTo("1q2w3e4r!@");
         assertThat(capturedSignupRequest.getPasswordCheck()).isEqualTo("1q2w3e4r!@");
         assertThat(capturedSignupRequest.getNickname()).isEqualTo("테스터");
+        assertThat(capturedSignupRequest.getRole()).isEqualTo(Role.ROLE_USER);
     }
 
     @DisplayName("회원가입 loginId 정합성 검사 실패 테스트")
     @Test
     public void signupLoginIdValidFailTest() throws Exception {
         //given
-        String content = "{\"loginId\": \"test\", \"password\" : \"1q2w3e4r!@\", \"passwordCheck\" :  \"1q2w3e4r!@\", \"nickname\" :  \"테스터\"}";
+        String content = "{\"loginId\": \"test\", \"password\" : \"1q2w3e4r!@\", \"passwordCheck\" :  \"1q2w3e4r!@\", \"nickname\" :  \"테스터\", \"role\" : \"ROLE_USER\"}";
 
         //when then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")

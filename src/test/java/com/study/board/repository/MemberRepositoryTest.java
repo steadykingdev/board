@@ -1,6 +1,7 @@
 package com.study.board.repository;
 
-import com.study.board.entity.Member;
+import com.study.board.domain.Role;
+import com.study.board.domain.entity.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ class MemberRepositoryTest {
     public void shouldReturnTrueWhenEntityExist() {
         //given
         String loginId = "testMember";
-        Member member = new Member(loginId, "1q2w3e4r1!", "테스터");
+        Member member = new Member(loginId, "1q2w3e4r1!", "테스터", Role.ROLE_USER);
         memberRepository.save(member);
 
         //when
