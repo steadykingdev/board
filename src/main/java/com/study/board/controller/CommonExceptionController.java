@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class CommonExceptionHandler {
+public class CommonExceptionController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponseFormat> handleValidationException(BindingResult bindingResult) {

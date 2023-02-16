@@ -1,5 +1,6 @@
-package com.study.board.dto;
+package com.study.board.controller.domain.dto;
 
+import com.study.board.controller.domain.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,8 @@ public class SignupRequest {
     @Size(min = 2, max = 10, message = "닉네임은 2자 이상 10자 이하로 입력해주세요.")
     private String nickname;
 
+    private Role role;
+
     public boolean checkPassword() {
         return password.equals(passwordCheck);
     }
@@ -39,5 +42,9 @@ public class SignupRequest {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

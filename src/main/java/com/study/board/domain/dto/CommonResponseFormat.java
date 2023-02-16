@@ -1,4 +1,4 @@
-package com.study.board.dto;
+package com.study.board.controller.domain.dto;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

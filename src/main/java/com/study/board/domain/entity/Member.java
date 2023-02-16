@@ -1,5 +1,6 @@
-package com.study.board.entity;
+package com.study.board.domain.entity;
 
+import com.study.board.domain.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -15,12 +16,14 @@ public class Member {
     private String loginId;
     private String password;
     private String nickname;
+    private Role role;
 
     public Member() {}
-    public Member(String loginId, String password, String nickname) {
+    public Member(String loginId, String password, String nickname, Role role) {
         this.loginId = loginId;
         this.password = password;
         this.nickname = nickname;
+        this.role = role;
     }
 
     public Long getId() {
@@ -37,5 +40,9 @@ public class Member {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }
