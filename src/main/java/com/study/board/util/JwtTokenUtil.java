@@ -1,14 +1,14 @@
 package com.study.board.util;
 
 import com.study.board.domain.JwtPayload;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.study.board.domain.Role;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +27,8 @@ public class JwtTokenUtil {
 
     // 토큰 생성
     public String createToken(JwtPayload jwtPayload) {
+
+        // 헤더
         Map<String, Object> headers = new HashMap<>();
 
         // Type 설정
@@ -34,38 +36,59 @@ public class JwtTokenUtil {
         // 암호화 정보
         headers.put("alg", "HS512");
 
+        // payload
         Date ext = new Date();
         ext.setTime(ext.getTime() + tokenValidityInMilliseconds);
 
+        Map<String, Object> claims = new HashMap<>();
+
+        claims.put("id", jwtPayload.getId().toString());
+        claims.put("loginId", jwtPayload.getLoginId());
+        claims.put("role", jwtPayload.getRole().toString());
+
         // 토큰 생성
         String jwt = Jwts.builder()
-                .setHeader(headers)
-                .claim("user",jwtPayload)
-                .setSubject("user-auth")
-                .setExpiration(ext)
-                .signWith(SignatureAlgorithm.HS512, secret)
-                .compact();
+                .setHeader(headers)     // Headers 설정
+                .addClaims(claims)
+                .setSubject("user-auth") // 토큰 용도
+                .setExpiration(ext)     // 토큰 만료 시간
+                .signWith(getKey()) // HS512와 key로 sign
+                .compact(); // 토큰 생성
 
         return jwt;
     }
 
     // 토큰 검증
-    public Map<String, Object> verifyJWT(String authorization) throws UnsupportedEncodingException {
-        Map<String, Object> claimMap = null;
-
+    public JwtPayload verifyJWT(String token) throws IOException {
+        JwtPayload jwtPayload = null;
         try {
-            claimMap = Jwts.parserBuilder()
-                    .setSigningKey(secret.getBytes(StandardCharsets.UTF_8))
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getKey())
                     .build()
-                    .parseClaimsJws(authorization) // 파싱 및 검증, 실패 시 에러
+                    .parseClaimsJws(token)
                     .getBody();
+
+            Long id = Long.valueOf((String) claims.get("id"));
+            String loginId = (String) claims.get("loginId");
+            String role = (String) claims.get("role");
+
+            jwtPayload = new JwtPayload(id, loginId, Role.valueOf(role));
+
         } catch (ExpiredJwtException e) { // 토큰이 만료되었을 경우
             System.out.println("expire === ");
             System.out.println(e);
+            throw e;
         } catch (Exception e) { // 그 외 에러
             System.out.println("error === ");
             System.out.println(e);
+            throw e;
         }
-        return claimMap;
+
+        return jwtPayload;
+    }
+
+    private Key getKey() {
+        byte[] secretBytes = secret.getBytes();
+        return new SecretKeySpec(secretBytes, SignatureAlgorithm.HS512.getJcaName());
     }
 }

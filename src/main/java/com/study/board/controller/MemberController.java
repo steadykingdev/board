@@ -1,17 +1,12 @@
 package com.study.board.controller;
 
-import com.study.board.domain.dto.CommonResponseFormat;
-import com.study.board.domain.dto.JwtResponse;
-import com.study.board.domain.dto.LoginRequest;
-import com.study.board.domain.dto.SignupRequest;
+import com.study.board.domain.JwtPayload;
+import com.study.board.domain.dto.*;
 import com.study.board.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -30,9 +25,17 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponseFormat> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<CommonResponseFormat<JwtResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
         String token = memberService.login(loginRequest);
-        JwtResponse jwtResponse = new JwtResponse("Bearer " + token);
+
+        JwtResponse jwtResponse = new JwtResponse(token);
+
         return new ResponseEntity<>(CommonResponseFormat.createSuccess(jwtResponse), HttpStatus.OK);
+    }
+
+    @GetMapping("/myinfo")
+    public ResponseEntity<CommonResponseFormat<MemberInfoResponse>> myInfo(@RequestAttribute("user") JwtPayload jwtPayload) {
+        MemberInfoResponse memberInfoResponse = memberService.findById(jwtPayload.getId());
+        return new ResponseEntity<>(CommonResponseFormat.createSuccess(memberInfoResponse), HttpStatus.OK);
     }
 }

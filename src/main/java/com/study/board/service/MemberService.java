@@ -2,6 +2,7 @@ package com.study.board.service;
 
 import com.study.board.domain.JwtPayload;
 import com.study.board.domain.dto.LoginRequest;
+import com.study.board.domain.dto.MemberInfoResponse;
 import com.study.board.domain.dto.SignupRequest;
 import com.study.board.domain.entity.Member;
 import com.study.board.exception.IncorrectPasswordException;
@@ -43,7 +44,15 @@ public class MemberService {
         if (!member.getPassword().equals(loginRequest.getPassword())) {
             throw new IncorrectPasswordException("비밀번호가 틀렸습니다.");
         }
-        return jwtTokenUtil.createToken(new JwtPayload(member.getLoginId(), member.getRole()));
+        return jwtTokenUtil.createToken(new JwtPayload(member.getId(), member.getLoginId(), member.getRole()));
+    }
+
+    public MemberInfoResponse findById(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    throw new UserNotFoundException("존재하지 않는 아이디입니다.");
+                });
+        return new MemberInfoResponse(member.getLoginId(), member.getNickname(), member.getRole());
     }
 
     private boolean existsMember(String loginId) {
