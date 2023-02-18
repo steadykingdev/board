@@ -3,6 +3,7 @@ package com.study.board.controller;
 import com.study.board.domain.Role;
 import com.study.board.domain.dto.SignupRequest;
 import com.study.board.service.MemberService;
+import com.study.board.util.JwtTokenUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class MemberControllerTest {
 
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private JwtTokenUtil jwtTokenUtil;
 
     @Captor
     private ArgumentCaptor<SignupRequest> signupRequestCaptor;
