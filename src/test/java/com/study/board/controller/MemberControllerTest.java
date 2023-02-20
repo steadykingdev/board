@@ -1,6 +1,7 @@
 package com.study.board.controller;
 
 import com.study.board.domain.Role;
+import com.study.board.domain.dto.LoginRequest;
 import com.study.board.domain.dto.SignupRequest;
 import com.study.board.service.MemberService;
 import com.study.board.util.JwtTokenUtil;
@@ -21,8 +22,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
 import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(MemberController.class)
@@ -39,6 +43,9 @@ class MemberControllerTest {
     @Captor
     private ArgumentCaptor<SignupRequest> signupRequestCaptor;
 
+    @Captor
+    private ArgumentCaptor<LoginRequest> loginRequestCaptor;
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(new MemberController(memberService)).build();
@@ -54,7 +61,7 @@ class MemberControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(status().isCreated());
 
         //then
         verify(memberService).signup(signupRequestCaptor.capture());
@@ -76,7 +83,7 @@ class MemberControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
         verifyNoInteractions(memberService);
     }
@@ -91,8 +98,57 @@ class MemberControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
         verifyNoInteractions(memberService); // memberService.signup() 메서드가 호출되지 않는지 확인 (호출x 여야 성공)
+    }
+
+    @DisplayName("로그인 성공 테스트")
+    @Test
+    public void loginTest() throws Exception {
+        //given
+        String content = "{\"loginId\": \"testMember\", \"password\": \"1q2w3e4r!@\"}";
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk());
+        //then
+        verify(memberService).login(loginRequestCaptor.capture());
+        LoginRequest capturedLoginRequest = loginRequestCaptor.getValue();
+        assertThat(capturedLoginRequest.getLoginId()).isEqualTo("testMember");
+        assertThat(capturedLoginRequest.getPassword()).isEqualTo("1q2w3e4r!@");
+    }
+
+    @DisplayName("로그인 loginId 정합성 검사 실패 테스트")
+    @Test
+    public void loginLoginIdValidFailTest() throws Exception {
+        //given
+        String content = "{\"loginId\": \"\", \"password\": \"1q2w3e4r!@\"}";
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isBadRequest());
+        //then
+        verifyNoInteractions(memberService);
+    }
+
+    @DisplayName("로그인 password 정합성 검사 실패 테스트")
+    @Test
+    public void loginPasswordValidFailTest() throws Exception {
+        //given
+        String content = "{\"loginId\": \"testMember\", \"password\": \"\"}";
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isBadRequest());
+
+        //then
+        verifyNoInteractions(memberService);
     }
 }
