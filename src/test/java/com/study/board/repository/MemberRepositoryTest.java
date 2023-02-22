@@ -57,7 +57,7 @@ class MemberRepositoryTest {
         assertThat(isExist).isEqualTo(false);
     }
 
-    @DisplayName("로그인 아이디로 멤버를 가져오는 쿼리 테스트(존재할 때")
+    @DisplayName("로그인 아이디로 멤버를 가져오는 쿼리 테스트(존재할 때)")
     @Test
     public void shouldReturnMemberWhenEntityDoesExist() throws Exception {
         //given
@@ -74,9 +74,9 @@ class MemberRepositoryTest {
         assertThat(findMember.getRole()).isEqualTo(savedMember.getRole());
     }
 
-    @DisplayName("로그인 아이디로 멤버를 가져오는 쿼리 테스트(존재하지 않을 때")
+    @DisplayName("로그인 아이디로 멤버를 가져오는 쿼리 테스트(존재하지 않을 때)")
     @Test
-    public void shouldReturnMemberWhenEntityDoesNotExist() throws Exception {
+    public void shouldReturnOptionalEmptyWhenEntityDoesNotExist() throws Exception {
         //given
         String loginId = "testMember1";
 
