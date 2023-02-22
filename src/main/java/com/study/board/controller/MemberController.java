@@ -25,12 +25,12 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponseFormat<JwtResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<CommonResponseFormat<LoginResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
         String token = memberService.login(loginRequest);
 
-        JwtResponse jwtResponse = new JwtResponse(token);
+        LoginResponse loginResponse = new LoginResponse(token);
 
-        return new ResponseEntity<>(CommonResponseFormat.createSuccess(jwtResponse), HttpStatus.OK);
+        return new ResponseEntity<>(CommonResponseFormat.createSuccess(loginResponse), HttpStatus.OK);
     }
 
     @GetMapping("/myinfo")

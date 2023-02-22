@@ -1,6 +1,7 @@
 package com.study.board.domain.entity;
 
 import com.study.board.domain.Role;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,10 +13,15 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "member_id")
     private Long id;
+
     private String loginId;
+
     private String password;
+
     private String nickname;
+
     private Role role;
 
     public Member() {}
