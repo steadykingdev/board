@@ -2,6 +2,7 @@ package com.study.board.config;
 
 import com.study.board.interceptor.AuthInterceptor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,6 +20,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry
                 .addInterceptor(authInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/api/login", "/api/signup");
+                .excludePathPatterns("/api/login", "/api/signup", "/api/posts/list", "/api/post/*");
     }
 }

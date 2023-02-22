@@ -17,16 +17,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
 import static org.assertj.core.api.Assertions.*;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(MemberController.class)
@@ -53,7 +50,7 @@ class MemberControllerTest {
 
     @DisplayName("회원가입 성공 테스트")
     @Test
-    public void signupTest() throws Exception {
+    public void signupSuccessTest() throws Exception {
         //given
         String content = "{\"loginId\": \"testMember\", \"password\" : \"1q2w3e4r!@\", \"passwordCheck\" :  \"1q2w3e4r!@\", \"nickname\" :  \"테스터\", \"role\" : \"ROLE_USER\"}";
 
