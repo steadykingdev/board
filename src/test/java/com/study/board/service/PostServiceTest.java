@@ -45,14 +45,14 @@ class PostServiceTest {
     @BeforeEach
     public void setUp() {
         member = new Member();
-        ReflectionTestUtils.setField(member, "id", 1L);
+        ReflectionTestUtils.setField(member, "id", 156345L);
         ReflectionTestUtils.setField(member, "loginId", "testMember");
         ReflectionTestUtils.setField(member, "password", "1q2w3e4r!@");
         ReflectionTestUtils.setField(member, "nickname", "테스터");
         ReflectionTestUtils.setField(member, "role", Role.ROLE_USER);
 
         post = new Post("testTitle", "testContent", member);
-        ReflectionTestUtils.setField(member, "id", 1L);
+        ReflectionTestUtils.setField(post, "id", 134342L);
 
     }
 
