@@ -133,9 +133,4 @@ class CommentRepositoryTest {
         //then
         assertThat(optionalComment.isPresent()).isFalse();
     }
-
-    
-
-
-
 }
