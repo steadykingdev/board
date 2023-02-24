@@ -1,6 +1,5 @@
 package com.study.board.domain.entity;
 
-import com.study.board.domain.dto.PostRequest;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -19,7 +18,7 @@ public class Post {
 
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
