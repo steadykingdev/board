@@ -45,8 +45,8 @@ public class CommentService {
 
     }
 
-    public List<CommentResponse> getCommentList() {
-        List<Comment> commentList = commentRepository.findAll();
+    public List<CommentResponse> getCommentList(Long postId) {
+        List<Comment> commentList = commentRepository.findAllByPostId(postId);
         return commentList.stream().map(p -> CommentResponse.fromEntity(p))
                 .collect(Collectors.toList());
     }

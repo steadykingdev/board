@@ -30,9 +30,9 @@ public class CommentController {
         return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.CREATED);
     }
 
-    @GetMapping("/comments/list")
-    public ResponseEntity<CommonResponseFormat<List<CommentResponse>>> getCommentList() {
-        List<CommentResponse> commentList =commentService.getCommentList();
+    @GetMapping("/comments/list/{post-id}")
+    public ResponseEntity<CommonResponseFormat<List<CommentResponse>>> getCommentList(@PathVariable("post-id") Long postId) {
+        List<CommentResponse> commentList =commentService.getCommentList(postId);
 
         return new ResponseEntity<>(CommonResponseFormat.createSuccess(commentList), HttpStatus.OK);
     }
