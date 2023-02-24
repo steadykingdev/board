@@ -104,26 +104,27 @@ class PostRepositoryTest {
 
         //when
         Optional<Post> optionalPost = postRepository.findById(id);
-        Post post = optionalPost.get();
+
         //then
-        assertThat(optionalPost).isNotEmpty();
-        assertThat(post.getId()).isEqualTo(savedPost.getId());
-        assertThat(post.getTitle()).isEqualTo(savedPost.getTitle());
-        assertThat(post.getContent()).isEqualTo(savedPost.getContent());
-        assertThat(post.getCreatedTime()).isEqualTo(savedPost.getCreatedTime());
-        assertThat(post.getMember().getId()).isEqualTo(savedPost.getMember().getId());
+        assertThat(optionalPost.isPresent()).isNotNull();
+        assertThat(optionalPost.get().getId()).isEqualTo(savedPost.getId());
+        assertThat(optionalPost.get().getTitle()).isEqualTo(savedPost.getTitle());
+        assertThat(optionalPost.get().getContent()).isEqualTo(savedPost.getContent());
+        assertThat(optionalPost.get().getCreatedTime()).isEqualTo(savedPost.getCreatedTime());
+        assertThat(optionalPost.get().getMember().getId()).isEqualTo(savedPost.getMember().getId());
     }
 
     @DisplayName("게시물 id값(pk값)으로 조회하는 테스트(존재하지 않을 때)")
     @Test
     public void shouldReturnOptionalEmptyWhenEntityNotExist() throws Exception {
         //given
-        Long id = 156342L;
+        Long id = savedPost.getId();
+        postRepository.delete(savedPost);
 
         //when
         Optional<Post> optionalPost = postRepository.findById(id);
 
         //then
-        assertThat(optionalPost).isEmpty();
+        assertThat(optionalPost.isPresent()).isFalse();
     }
 }
