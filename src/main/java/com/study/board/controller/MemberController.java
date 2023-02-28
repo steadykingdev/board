@@ -7,6 +7,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -19,8 +22,10 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponseFormat> signup(@RequestBody @Valid SignupRequest signupRequest) {
-        memberService.signup(signupRequest);
+    public ResponseEntity<CommonResponseFormat> signup(@RequestPart(name = "signupRequest") @Valid SignupRequest signupRequest,
+                                                       @RequestPart(name = "imgFile", required = false) MultipartFile imgFile) throws IOException {
+
+        memberService.signup(signupRequest, imgFile);
         return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.CREATED);
     }
 
