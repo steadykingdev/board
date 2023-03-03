@@ -24,9 +24,9 @@ public class Member {
 
     private Role role;
 
-    private String profileImgName;
-
     private String profileImgPath;
+
+    private String profileImgName;
 
     public Member() {}
     public Member(String loginId, String password, String nickname, Role role) {
@@ -56,8 +56,16 @@ public class Member {
         return role;
     }
 
-    public void setProfileImg(String profileImgName, String uploadPath) {
-        this.profileImgName = profileImgName;
+    public String getProfileImgPath() {
+        return profileImgPath;
+    }
+
+    public String getProfileImgName() {
+        return profileImgName;
+    }
+
+    public void setProfileImg(String uploadPath, String profileImgName) {
         this.profileImgPath = uploadPath + "/" + profileImgName;
+        this.profileImgName = profileImgName;
     }
 }

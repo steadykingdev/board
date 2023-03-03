@@ -22,10 +22,9 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponseFormat> signup(@RequestPart(name = "signupRequest") @Valid SignupRequest signupRequest,
-                                                       @RequestPart(name = "imgFile", required = false) MultipartFile imgFile) throws IOException {
+    public ResponseEntity<CommonResponseFormat> signup(@Valid SignupRequest signupRequest) throws IOException {
 
-        memberService.signup(signupRequest, imgFile);
+        memberService.signup(signupRequest);
         return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.CREATED);
     }
 
@@ -39,7 +38,7 @@ public class MemberController {
     }
 
     @GetMapping("/myinfo")
-    public ResponseEntity<CommonResponseFormat<MemberInfoResponse>> myInfo(@RequestAttribute("user") JwtPayload jwtPayload) {
+    public ResponseEntity<CommonResponseFormat<MemberInfoResponse>> myInfo(@RequestAttribute("user") JwtPayload jwtPayload) throws Exception {
         MemberInfoResponse memberInfoResponse = memberService.findById(jwtPayload.getId());
         return new ResponseEntity<>(CommonResponseFormat.createSuccess(memberInfoResponse), HttpStatus.OK);
     }

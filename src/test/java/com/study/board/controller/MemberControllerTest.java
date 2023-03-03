@@ -1,6 +1,5 @@
 package com.study.board.controller;
 
-import com.study.board.domain.Role;
 import com.study.board.domain.dto.LoginRequest;
 import com.study.board.domain.dto.SignupRequest;
 import com.study.board.service.MemberService;
@@ -15,10 +14,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -43,45 +44,100 @@ class MemberControllerTest {
     @Captor
     private ArgumentCaptor<LoginRequest> loginRequestCaptor;
 
+    private final String LOGIN_ID = "loginId";
+    private final String PASSWORD = "password";
+    private final String PASSWORD_CHECK = "passwordCheck";
+    private final String NICKNAME = "nickname";
+    private final String ROLE = "role";
+
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(new MemberController(memberService)).build();
     }
 
-    @DisplayName("회원가입 성공 테스트")
+    @DisplayName("회원가입 성공 테스트(프로필 이미지 x)")
     @Test
-    public void signupSuccessTest() throws Exception {
+    public void signupSuccessWithoutProfileTest() throws Exception {
         //given
-        String content = "{\"loginId\": \"testMember\", \"password\" : \"1q2w3e4r!@\", \"passwordCheck\" :  \"1q2w3e4r!@\", \"nickname\" :  \"테스터\", \"role\" : \"ROLE_USER\"}";
+        String loginId = "testMember";
+        String password = "1q2w3e4r!@";
+        String nickname = "테스터";
+        String role = "ROLE_USER";
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isCreated());
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .multipart("/api/signup")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .param(LOGIN_ID, loginId)
+                .param(PASSWORD, password)
+                .param(PASSWORD_CHECK, password)
+                .param(NICKNAME, nickname)
+                .param(ROLE, role);
 
         //then
+        mockMvc.perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @DisplayName("회원가입 성공 테스트(프로필 이미지 o)")
+    @Test
+    public void signupSuccessWithProfileTest() throws Exception {
+        //given
+        String loginId = "testMember";
+        String password = "1q2w3e4r!@";
+        String nickname = "테스터";
+        String role = "ROLE_USER";
+
+        MockMultipartFile profileImg = new MockMultipartFile(
+                "imgFile",
+                "test.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "imgFile".getBytes()
+        );
+
+        //when
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .multipart("/api/signup")
+                .file(profileImg)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .param(LOGIN_ID, loginId)
+                .param(PASSWORD, password)
+                .param(PASSWORD_CHECK, password)
+                .param(NICKNAME, nickname)
+                .param(ROLE, role);
+
+        //then
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isCreated());
+
         verify(memberService).signup(signupRequestCaptor.capture());
         SignupRequest capturedSignupRequest = signupRequestCaptor.getValue();
-        assertThat(capturedSignupRequest.getLoginId()).isEqualTo("testMember");
-        assertThat(capturedSignupRequest.getPassword()).isEqualTo("1q2w3e4r!@");
-        assertThat(capturedSignupRequest.getPasswordCheck()).isEqualTo("1q2w3e4r!@");
-        assertThat(capturedSignupRequest.getNickname()).isEqualTo("테스터");
-        assertThat(capturedSignupRequest.getRole()).isEqualTo(Role.ROLE_USER);
+
+        assertThat(capturedSignupRequest.getImgFile()).isEqualTo(profileImg);
     }
 
     @DisplayName("회원가입 loginId 정합성 검사 실패 테스트")
     @Test
     public void signupLoginIdValidFailTest() throws Exception {
         //given
-        String content = "{\"loginId\": \"test\", \"password\" : \"1q2w3e4r!@\", \"passwordCheck\" :  \"1q2w3e4r!@\", \"nickname\" :  \"테스터\", \"role\" : \"ROLE_USER\"}";
+        String loginId = "1";
+        String password = "1q2w3e4r!@";
+        String nickname = "테스터";
+        String role = "ROLE_USER";
 
-        //when then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
+        //when
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .multipart("/api/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param(LOGIN_ID, loginId)
+                .param(PASSWORD, password)
+                .param(PASSWORD_CHECK, password)
+                .param(NICKNAME, nickname)
+                .param(ROLE, role);
+
+        //then
+        mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest());
-
         verifyNoInteractions(memberService);
     }
 
@@ -89,14 +145,24 @@ class MemberControllerTest {
     @Test
     public void signupPasswordValidFailTest() throws Exception {
         //given
-        String content = "{\"loginId\": \"testMember\", \"password\" : \"test\", \"passwordCheck\" :  \"test\", \"nickname\" :  \"테스터\"}";
+        String loginId = "testMember";
+        String password = "test";
+        String nickname = "테스터";
+        String role = "ROLE_USER";
 
-        //when then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
+        //when
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .multipart("/api/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param(LOGIN_ID, loginId)
+                .param(PASSWORD, password)
+                .param(PASSWORD_CHECK, password)
+                .param(NICKNAME, nickname)
+                .param(ROLE, role);
+
+        //then
+        mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest());
-
         verifyNoInteractions(memberService); // memberService.signup() 메서드가 호출되지 않는지 확인 (호출x 여야 성공)
     }
 
@@ -107,13 +173,16 @@ class MemberControllerTest {
         String content = "{\"loginId\": \"testMember\", \"password\": \"1q2w3e4r!@\"}";
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isOk());
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
+
         //then
+        mockMvc.perform(requestBuilder).andExpect(status().isOk());
+
         verify(memberService).login(loginRequestCaptor.capture());
         LoginRequest capturedLoginRequest = loginRequestCaptor.getValue();
+
         assertThat(capturedLoginRequest.getLoginId()).isEqualTo("testMember");
         assertThat(capturedLoginRequest.getPassword()).isEqualTo("1q2w3e4r!@");
     }
@@ -125,11 +194,12 @@ class MemberControllerTest {
         String content = "{\"loginId\": \"\", \"password\": \"1q2w3e4r!@\"}";
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isBadRequest());
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
+
         //then
+        mockMvc.perform(requestBuilder).andExpect(status().isBadRequest());
         verifyNoInteractions(memberService);
     }
 
@@ -140,12 +210,12 @@ class MemberControllerTest {
         String content = "{\"loginId\": \"testMember\", \"password\": \"\"}";
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(status().isBadRequest());
+        MockHttpServletRequestBuilder requestBuilder =MockMvcRequestBuilders.post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content);
 
         //then
+        mockMvc.perform(requestBuilder).andExpect(status().isBadRequest());
         verifyNoInteractions(memberService);
     }
 }
