@@ -31,6 +31,8 @@ public class MemberService {
 
     private final String fileLocation;
 
+    private final String COMMON_PROFILE = "src/main/resources/static/images/no_profile.png";
+
     public MemberService(MemberRepository memberRepository, JwtTokenUtil jwtTokenUtil, FileStorage fileStorage, @Value("${file.upload.location}") String fileLocation) {
         this.memberRepository = memberRepository;
         this.jwtTokenUtil = jwtTokenUtil;
@@ -73,13 +75,11 @@ public class MemberService {
                     throw new UserNotFoundException("존재하지 않는 아이디입니다.");
                 });
 
-        byte[] img = null;
-
-        try {
-            img = fileStorage.getImage(member.getProfileImgPath());
-        } catch (Exception e) {
-            throw new Exception("파일을 변환하는데 문제가 발생했습니다.");
+        String profilePath = member.getProfileImgPath();
+        if (profilePath == null) {
+            profilePath = COMMON_PROFILE;
         }
+        byte[] img = getImage(profilePath);
 
         return new MemberInfoResponse(member.getLoginId(), member.getNickname(), member.getRole(), img);
     }
@@ -93,5 +93,17 @@ public class MemberService {
                 .orElseThrow(() -> {
                     throw new UserNotFoundException("존재하지 않는 아이디입니다.");
                 });
+    }
+
+    private byte[] getImage(String profileImgPath) throws Exception {
+        byte[] img = null;
+        System.out.println("profileImgPath : " + profileImgPath);
+        try {
+            img = fileStorage.getImage(profileImgPath);
+        } catch (Exception e) {
+            throw new Exception("파일을 변환하는데 문제가 발생했습니다.");
+        }
+
+        return img;
     }
 }
