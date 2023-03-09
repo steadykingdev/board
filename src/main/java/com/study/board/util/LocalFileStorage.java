@@ -31,16 +31,4 @@ public class LocalFileStorage implements FileStorage{
 
         return fileName;
     }
-
-    @Override
-    public byte[] getImage(String imgPath) throws Exception {
-        Path path = Paths.get(imgPath);
-
-        try {
-            byte[] data = Files.readAllBytes(path);
-            return data;
-        } catch (IOException e) {
-            throw e;
-        }
-    }
 }

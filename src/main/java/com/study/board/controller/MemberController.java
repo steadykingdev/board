@@ -38,7 +38,7 @@ public class MemberController {
     }
 
     @GetMapping("/myinfo")
-    public ResponseEntity<CommonResponseFormat<MemberInfoResponse>> myInfo(@RequestAttribute("user") JwtPayload jwtPayload) throws Exception {
+    public ResponseEntity<CommonResponseFormat<MemberInfoResponse>> myInfo(@RequestAttribute("user") JwtPayload jwtPayload) {
         MemberInfoResponse memberInfoResponse = memberService.findById(jwtPayload.getId());
         return new ResponseEntity<>(CommonResponseFormat.createSuccess(memberInfoResponse), HttpStatus.OK);
     }

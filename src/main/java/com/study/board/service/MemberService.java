@@ -27,15 +27,19 @@ public class MemberService {
 
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final String imgHost;
+
     private final FileStorage fileStorage;
 
     private final String fileLocation;
 
-    private final String COMMON_PROFILE = "src/main/resources/static/images/no_profile.png";
+    private final String COMMON_PROFILE = "/images/no_profile.png";
 
-    public MemberService(MemberRepository memberRepository, JwtTokenUtil jwtTokenUtil, FileStorage fileStorage, @Value("${file.upload.location}") String fileLocation) {
+    public MemberService(MemberRepository memberRepository, JwtTokenUtil jwtTokenUtil, FileStorage fileStorage,
+                         @Value("${file.upload.location}") String fileLocation, @Value("${myapp.server.host}") String imgHost) {
         this.memberRepository = memberRepository;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.imgHost = imgHost;
         this.fileStorage = fileStorage;
         this.fileLocation = fileLocation;
     }
@@ -69,7 +73,7 @@ public class MemberService {
         return jwtTokenUtil.createToken(new JwtPayload(member.getId(), member.getLoginId(), member.getRole()));
     }
 
-    public MemberInfoResponse findById(Long memberId) throws Exception {
+    public MemberInfoResponse findById(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     throw new UserNotFoundException("존재하지 않는 아이디입니다.");
@@ -77,10 +81,10 @@ public class MemberService {
 
         String profilePath = member.getProfileImgPath();
 
-        byte[] img = getImage(profilePath);
+        String imgPath = getImagePath(profilePath);
 
         MemberInfoResponse memberResponse = new MemberInfoResponse(member.getLoginId(), member.getNickname(), member.getRole());
-        memberResponse.setProfileImg(img);
+        memberResponse.setProfileImg(imgPath);
 
         return memberResponse;
     }
@@ -96,19 +100,16 @@ public class MemberService {
                 });
     }
 
-    private byte[] getImage(String profileImgPath) throws Exception {
-        byte[] img = null;
-
-        if (profileImgPath == null) {
-            profileImgPath = COMMON_PROFILE;
+    private String getImagePath(String profileImgPath){
+        String resultPath;
+        StringBuilder sb = new StringBuilder();
+        if (profileImgPath != null) {
+            sb.append(imgHost).append(profileImgPath);
+            resultPath = sb.toString();
+        } else {
+            resultPath = COMMON_PROFILE;
         }
 
-        try {
-            img = fileStorage.getImage(profileImgPath);
-        } catch (Exception e) {
-            throw new Exception("파일을 변환하는데 문제가 발생했습니다.");
-        }
-
-        return img;
+        return resultPath;
     }
 }

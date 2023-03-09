@@ -39,7 +39,7 @@ public class PostController {
     }
 
     @GetMapping("/post/{post-id}")
-    public ResponseEntity<CommonResponseFormat<PostResponse>> getPost(@PathVariable("post-id") Long postId) throws Exception {
+    public ResponseEntity<CommonResponseFormat<PostResponse>> getPost(@PathVariable("post-id") Long postId){
 
         PostResponse postResponse = postService.getPost(postId);
 

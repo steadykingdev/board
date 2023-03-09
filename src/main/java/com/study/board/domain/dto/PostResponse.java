@@ -14,7 +14,7 @@ public class PostResponse {
 
     private String nickname;
 
-    private byte[] profileImg;
+    private String profileImg;
 
     private LocalDateTime createdTime;
 
@@ -47,7 +47,7 @@ public class PostResponse {
         return nickname;
     }
 
-    public byte[] getProfileImg() {
+    public String getProfileImg() {
         return profileImg;
     }
 
@@ -55,7 +55,7 @@ public class PostResponse {
         return createdTime;
     }
 
-    public void setProfileImg(byte[] profileImg) {
+    public void setProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
 }

@@ -7,5 +7,4 @@ import java.io.IOException;
 public interface FileStorage {
     String store(MultipartFile file) throws IOException;
 
-    byte[] getImage(String imgPath) throws Exception;
 }

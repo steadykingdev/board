@@ -7,7 +7,7 @@ public class MemberInfoResponse {
     private String loginId;
     private String nickname;
     private Role role;
-    private byte[] profileImg;
+    private String profileImg;
 
     public MemberInfoResponse(String loginId, String nickname, Role role) {
         this.loginId = loginId;
@@ -27,11 +27,11 @@ public class MemberInfoResponse {
         return role;
     }
 
-    public byte[] getProfileImg() {
+    public String getProfileImg() {
         return profileImg;
     }
 
-    public void setProfileImg(byte[] profileImg) {
+    public void setProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
 }
