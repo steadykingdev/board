@@ -7,13 +7,12 @@ public class MemberInfoResponse {
     private String loginId;
     private String nickname;
     private Role role;
-    private byte[] img;
+    private byte[] profileImg;
 
-    public MemberInfoResponse(String loginId, String nickname, Role role, byte[] img) {
+    public MemberInfoResponse(String loginId, String nickname, Role role) {
         this.loginId = loginId;
         this.nickname = nickname;
         this.role = role;
-        this.img = img;
     }
 
     public String getLoginId() {
@@ -28,7 +27,11 @@ public class MemberInfoResponse {
         return role;
     }
 
-    public byte[] getImg() {
-        return img;
+    public byte[] getProfileImg() {
+        return profileImg;
+    }
+
+    public void setProfileImg(byte[] profileImg) {
+        this.profileImg = profileImg;
     }
 }

@@ -81,7 +81,10 @@ public class MemberService {
         }
         byte[] img = getImage(profilePath);
 
-        return new MemberInfoResponse(member.getLoginId(), member.getNickname(), member.getRole(), img);
+        MemberInfoResponse memberResponse = new MemberInfoResponse(member.getLoginId(), member.getNickname(), member.getRole());
+        memberResponse.setProfileImg(img);
+
+        return memberResponse;
     }
 
     private boolean existsMember(String loginId) {
