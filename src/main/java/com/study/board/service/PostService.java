@@ -9,6 +9,7 @@ import com.study.board.exception.PostNotFoundException;
 import com.study.board.exception.UserNotFoundException;
 import com.study.board.repository.MemberRepository;
 import com.study.board.repository.PostRepository;
+import com.study.board.util.FileStorage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +24,14 @@ public class PostService {
 
     private final MemberRepository memberRepository;
 
-    public PostService(PostRepository postRepository, MemberRepository memberRepository) {
+    private final FileStorage fileStorage;
+
+    private final String COMMON_PROFILE = "src/main/resources/static/images/no_profile.png";
+
+    public PostService(PostRepository postRepository, MemberRepository memberRepository, FileStorage fileStorage) {
         this.postRepository = postRepository;
         this.memberRepository = memberRepository;
+        this.fileStorage = fileStorage;
     }
 
     @Transactional
@@ -41,13 +47,33 @@ public class PostService {
     public List<PostResponse> getPostList() {
         List<Post> postList = postRepository.findAll();
         return postList.stream()
-                .map(p -> PostResponse.fromEntity(p))
+                .map(p -> {
+                    String profilePath = p.getMember().getProfileImgPath();
+                    byte[] img = null;
+
+                    try {
+                        img = getImage(profilePath);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    PostResponse postResponse = PostResponse.fromEntity(p);
+                    postResponse.setProfileImg(img);
+
+                    return postResponse;
+                })
                 .collect(Collectors.toList());
     }
 
-    public PostResponse getPost(Long postId) {
+    public PostResponse getPost(Long postId) throws Exception {
         Post post = findPostById(postId);
-        return PostResponse.fromEntity(post);
+        String profilePath = post.getMember().getProfileImgPath();
+        byte[] img = getImage(profilePath);
+
+        PostResponse postResponse = PostResponse.fromEntity(post);
+        postResponse.setProfileImg(img);
+
+        return postResponse;
     }
 
     @Transactional
@@ -80,6 +106,22 @@ public class PostService {
                 .orElseThrow(() -> {
                     throw new PostNotFoundException("존재하지 않는 게시물입니다.");
                 });
+    }
+
+    private byte[] getImage(String profileImgPath) throws Exception {
+        byte[] img = null;
+
+        if (profileImgPath == null) {
+            profileImgPath = COMMON_PROFILE;
+        }
+
+        try {
+            img = fileStorage.getImage(profileImgPath);
+        } catch (Exception e) {
+            throw new Exception("파일을 변환하는데 문제가 발생했습니다.");
+        }
+
+        return img;
     }
 
 }

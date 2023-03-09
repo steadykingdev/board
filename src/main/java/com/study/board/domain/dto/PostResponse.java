@@ -14,6 +14,8 @@ public class PostResponse {
 
     private String nickname;
 
+    private byte[] profileImg;
+
     private LocalDateTime createdTime;
 
     public PostResponse(Long id, String title, String content, String nickname, LocalDateTime createdTime) {
@@ -25,6 +27,7 @@ public class PostResponse {
     }
 
     public static PostResponse fromEntity(Post post) {
+
         return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getMember().getNickname(), post.getCreatedTime());
     }
 
@@ -44,7 +47,15 @@ public class PostResponse {
         return nickname;
     }
 
+    public byte[] getProfileImg() {
+        return profileImg;
+    }
+
     public LocalDateTime getCreatedTime() {
         return createdTime;
+    }
+
+    public void setProfileImg(byte[] profileImg) {
+        this.profileImg = profileImg;
     }
 }
