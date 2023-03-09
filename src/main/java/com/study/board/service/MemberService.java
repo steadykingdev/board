@@ -76,9 +76,7 @@ public class MemberService {
                 });
 
         String profilePath = member.getProfileImgPath();
-        if (profilePath == null) {
-            profilePath = COMMON_PROFILE;
-        }
+
         byte[] img = getImage(profilePath);
 
         MemberInfoResponse memberResponse = new MemberInfoResponse(member.getLoginId(), member.getNickname(), member.getRole());
@@ -100,7 +98,11 @@ public class MemberService {
 
     private byte[] getImage(String profileImgPath) throws Exception {
         byte[] img = null;
-        System.out.println("profileImgPath : " + profileImgPath);
+
+        if (profileImgPath == null) {
+            profileImgPath = COMMON_PROFILE;
+        }
+
         try {
             img = fileStorage.getImage(profileImgPath);
         } catch (Exception e) {
