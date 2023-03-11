@@ -26,7 +26,6 @@ public class Member {
 
     private String profileImgPath;
 
-    private String profileImgName;
 
     public Member() {}
     public Member(String loginId, String password, String nickname, Role role) {
@@ -60,12 +59,7 @@ public class Member {
         return profileImgPath;
     }
 
-    public String getProfileImgName() {
-        return profileImgName;
-    }
-
     public void setProfileImg(String uploadPath, String profileImgName) {
         this.profileImgPath = uploadPath + "/" + profileImgName;
-        this.profileImgName = profileImgName;
     }
 }
