@@ -3,6 +3,7 @@ package com.study.board.service;
 import com.study.board.domain.JwtPayload;
 import com.study.board.domain.Role;
 import com.study.board.domain.dto.LoginRequest;
+import com.study.board.domain.dto.MemberDeleteRequest;
 import com.study.board.domain.dto.MemberInfoResponse;
 import com.study.board.domain.dto.SignupRequest;
 import com.study.board.domain.entity.Member;
@@ -67,17 +68,13 @@ public class MemberService {
 
     public String login(LoginRequest loginRequest) {
         Member member = findByLoginId(loginRequest.getLoginId());
-        if (!member.getPassword().equals(loginRequest.getPassword())) {
-            throw new IncorrectPasswordException("비밀번호가 틀렸습니다.");
-        }
+        verifyPassword(member, loginRequest.getPassword());
+
         return jwtTokenUtil.createToken(new JwtPayload(member.getId(), member.getLoginId(), member.getRole()));
     }
 
-    public MemberInfoResponse findById(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> {
-                    throw new UserNotFoundException("존재하지 않는 아이디입니다.");
-                });
+    public MemberInfoResponse myInfo(Long memberId) {
+        Member member = findById(memberId);
 
         String profilePath = member.getProfileImgPath();
 
@@ -89,8 +86,34 @@ public class MemberService {
         return memberResponse;
     }
 
+    @Transactional
+    public void deleteMember(Long memberId, MemberDeleteRequest memberDeleteRequest) {
+        Member member = findById(memberId);
+
+        verifyPassword(member, memberDeleteRequest.getPassword());
+
+        memberRepository.delete(member);
+    }
+
+    @Transactional
+    public Member updateProfileImg(Long memberId, MultipartFile imgFile) throws IOException {
+        Member member = findById(memberId);
+
+        if (imgFile != null) {
+            String fileName = fileStorage.store(imgFile);
+            member.setProfileImg(fileLocation, fileName);
+        }
+        return member;
+    }
+
     private boolean existsMember(String loginId) {
         return memberRepository.existsByLoginId(loginId);
+    }
+
+    private void verifyPassword(Member member, String password) {
+        if (!member.getPassword().equals(password)) {
+            throw new IncorrectPasswordException("비밀번호가 틀렸습니다.");
+        }
     }
 
     private Member findByLoginId(String loginId) {
@@ -111,5 +134,12 @@ public class MemberService {
         }
 
         return resultPath;
+    }
+
+    private Member findById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    throw new UserNotFoundException("존재하지 않는 아이디입니다.");
+                });
     }
 }

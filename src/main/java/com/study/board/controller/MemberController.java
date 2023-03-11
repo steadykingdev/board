@@ -37,9 +37,24 @@ public class MemberController {
         return new ResponseEntity<>(CommonResponseFormat.createSuccess(loginResponse), HttpStatus.OK);
     }
 
-    @GetMapping("/myinfo")
+    @GetMapping("/member")
     public ResponseEntity<CommonResponseFormat<MemberInfoResponse>> myInfo(@RequestAttribute("user") JwtPayload jwtPayload) {
-        MemberInfoResponse memberInfoResponse = memberService.findById(jwtPayload.getId());
+        MemberInfoResponse memberInfoResponse = memberService.myInfo(jwtPayload.getId());
         return new ResponseEntity<>(CommonResponseFormat.createSuccess(memberInfoResponse), HttpStatus.OK);
+    }
+
+    @PutMapping("/member/profile-image")
+    public ResponseEntity<CommonResponseFormat> updateProfileImg(@RequestAttribute("user") JwtPayload jwtPayload,
+                                                                 @RequestPart(required = false) MultipartFile imgFile) throws IOException {
+        memberService.updateProfileImg(jwtPayload.getId(), imgFile);
+        return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.OK);
+    }
+
+    @PostMapping("/member")
+    public ResponseEntity<CommonResponseFormat> deleteMember(@RequestAttribute("user") JwtPayload jwtPayload,
+                                                             @RequestBody @Valid MemberDeleteRequest memberDeleteRequest) {
+        memberService.deleteMember(jwtPayload.getId(), memberDeleteRequest);
+
+        return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.OK);
     }
 }
