@@ -28,6 +28,8 @@ public class CommentService {
 
     private final MemberRepository memberRepository;
 
+    private final String COMMON_PROFILE = "/images/no_profile.png";
+
     public CommentService(CommentRepository commentRepository, PostRepository postRepository, MemberRepository memberRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
@@ -47,7 +49,15 @@ public class CommentService {
 
     public List<CommentResponse> getCommentList(Long postId) {
         List<Comment> commentList = commentRepository.findAllByPostId(postId);
-        return commentList.stream().map(p -> CommentResponse.fromEntity(p))
+        return commentList.stream().map(c -> {
+                    String profileImgPath = c.getMember().getProfileImgPath();
+                    String imgPath = getImagePath(profileImgPath);
+
+                    CommentResponse commentResponse = CommentResponse.fromEntity(c);
+                    commentResponse.setProfileImg(imgPath);
+
+                    return commentResponse;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -99,5 +109,16 @@ public class CommentService {
                 .orElseThrow(() -> {
                     throw new UserNotFoundException("존재하지 않는 회원입니다.");
                 });
+    }
+
+    private String getImagePath(String profileImgPath) {
+        String resultPath;
+        if (profileImgPath != null) {
+            resultPath = profileImgPath;
+        } else {
+            resultPath = COMMON_PROFILE;
+        }
+
+        return resultPath;
     }
 }

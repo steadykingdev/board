@@ -105,10 +105,8 @@ public class PostService {
 
     private String getImagePath(String profileImgPath){
         String resultPath;
-        StringBuilder sb = new StringBuilder();
         if (profileImgPath != null) {
-            sb.append(imgHost).append(profileImgPath);
-            resultPath = sb.toString();
+            resultPath = profileImgPath;
         } else {
             resultPath = COMMON_PROFILE;
         }

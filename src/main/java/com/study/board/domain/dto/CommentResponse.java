@@ -10,6 +10,8 @@ public class CommentResponse {
 
     private String nickname;
 
+    private String profileImg;
+
     private String comment;
 
     private LocalDateTime createdTime;
@@ -39,5 +41,9 @@ public class CommentResponse {
 
     public LocalDateTime getCreatedTime() {
         return createdTime;
+    }
+
+    public void setProfileImg(String profileImg) {
+        this.profileImg = profileImg;
     }
 }
