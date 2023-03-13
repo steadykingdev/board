@@ -102,6 +102,8 @@ public class MemberService {
         if (imgFile != null) {
             String fileName = fileStorage.store(imgFile);
             member.setProfileImg(fileLocation, fileName);
+        } else {
+            member.setProfileImg();
         }
         return member;
     }

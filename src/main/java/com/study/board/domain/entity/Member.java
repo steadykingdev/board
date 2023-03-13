@@ -62,4 +62,8 @@ public class Member {
     public void setProfileImg(String uploadPath, String profileImgName) {
         this.profileImgPath = uploadPath + "/" + profileImgName;
     }
+
+    public void setProfileImg() {
+        this.profileImgPath = null;
+    }
 }
