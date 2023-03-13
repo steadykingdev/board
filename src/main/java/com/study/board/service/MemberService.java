@@ -125,10 +125,8 @@ public class MemberService {
 
     private String getImagePath(String profileImgPath){
         String resultPath;
-        StringBuilder sb = new StringBuilder();
         if (profileImgPath != null) {
-            sb.append(imgHost).append(profileImgPath);
-            resultPath = sb.toString();
+            resultPath = imgHost + profileImgPath;
         } else {
             resultPath = COMMON_PROFILE;
         }

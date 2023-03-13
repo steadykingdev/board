@@ -12,6 +12,7 @@ import com.study.board.exception.UserNotFoundException;
 import com.study.board.repository.CommentRepository;
 import com.study.board.repository.MemberRepository;
 import com.study.board.repository.PostRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +29,16 @@ public class CommentService {
 
     private final MemberRepository memberRepository;
 
+    private final String imgHost;
+
     private final String COMMON_PROFILE = "/images/no_profile.png";
 
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository, MemberRepository memberRepository) {
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository, MemberRepository memberRepository,
+                          @Value("${myapp.server.host}") String imgHost) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.memberRepository = memberRepository;
+        this.imgHost = imgHost;
     }
 
     @Transactional
@@ -111,10 +116,10 @@ public class CommentService {
                 });
     }
 
-    private String getImagePath(String profileImgPath) {
+    private String getImagePath(String profileImgPath){
         String resultPath;
         if (profileImgPath != null) {
-            resultPath = profileImgPath;
+            resultPath = imgHost + profileImgPath;
         } else {
             resultPath = COMMON_PROFILE;
         }
