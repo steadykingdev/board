@@ -1,7 +1,6 @@
 package com.study.board.domain.entity;
 
 import com.study.board.domain.Role;
-import com.study.board.domain.entity.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
