@@ -10,6 +10,8 @@ import com.study.board.exception.UserNotFoundException;
 import com.study.board.repository.MemberRepository;
 import com.study.board.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +47,8 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public List<PostResponse> getPostList() {
-        List<Post> postList = postRepository.findAll();
+    public List<PostResponse> getPostList(Pageable pageable) {
+        Page<Post> postList = postRepository.findAll(pageable);
         return postList.stream()
                 .map(p -> {
                     String profilePath = p.getMember().getProfileImgPath();

@@ -6,6 +6,7 @@ import com.study.board.domain.dto.PostRequest;
 import com.study.board.domain.dto.PostResponse;
 import com.study.board.service.PostService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +33,8 @@ public class PostController {
     }
 
     @GetMapping("/posts/list")
-    public ResponseEntity<CommonResponseFormat<List<PostResponse>>> getPostList() {
-        List<PostResponse> postResponseList = postService.getPostList();
+    public ResponseEntity<CommonResponseFormat<List<PostResponse>>> getPostList(Pageable pageable) {
+        List<PostResponse> postResponseList = postService.getPostList(pageable);
 
         return new ResponseEntity<>(CommonResponseFormat.createSuccess(postResponseList), HttpStatus.OK);
     }
