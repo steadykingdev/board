@@ -13,6 +13,8 @@ import com.study.board.repository.CommentRepository;
 import com.study.board.repository.MemberRepository;
 import com.study.board.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,8 +54,8 @@ public class CommentService {
 
     }
 
-    public List<CommentResponse> getCommentList(Long postId) {
-        List<Comment> commentList = commentRepository.findAllByPostId(postId);
+    public List<CommentResponse> getCommentList(Long postId, Pageable pageable) {
+        Page<Comment> commentList = commentRepository.findAllByPostId(postId, pageable);
         return commentList.stream().map(c -> {
                     String profileImgPath = c.getMember().getProfileImgPath();
                     String imgPath = getImagePath(profileImgPath);

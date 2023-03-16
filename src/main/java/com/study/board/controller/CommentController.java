@@ -5,6 +5,7 @@ import com.study.board.domain.dto.CommentRequest;
 import com.study.board.domain.dto.CommentResponse;
 import com.study.board.domain.dto.CommonResponseFormat;
 import com.study.board.service.CommentService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/comments/{post-id}")
+    @PostMapping("/posts/{post-id}/comments")
     public ResponseEntity<CommonResponseFormat> createComment(@PathVariable("post-id") Long postId,
                                                               @RequestAttribute("user") JwtPayload jwtPayload,
                                                               @RequestBody CommentRequest commentRequest) {
@@ -30,9 +31,10 @@ public class CommentController {
         return new ResponseEntity<>(CommonResponseFormat.createSuccessWithNoContent(), HttpStatus.CREATED);
     }
 
-    @GetMapping("/comments/list/{post-id}")
-    public ResponseEntity<CommonResponseFormat<List<CommentResponse>>> getCommentList(@PathVariable("post-id") Long postId) {
-        List<CommentResponse> commentList =commentService.getCommentList(postId);
+    @GetMapping("/posts/{post-id}/comments/list")
+    public ResponseEntity<CommonResponseFormat<List<CommentResponse>>> getCommentList(@PathVariable("post-id") Long postId,
+                                                                                      Pageable pageable) {
+        List<CommentResponse> commentList =commentService.getCommentList(postId, pageable);
 
         return new ResponseEntity<>(CommonResponseFormat.createSuccess(commentList), HttpStatus.OK);
     }
