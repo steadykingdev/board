@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -80,15 +83,16 @@ class CommentRepositoryTest {
     public void shouldReturnCommentListByOnePost() throws Exception {
         //given
         String content = "comment creation content";
+        Pageable pageable = PageRequest.of(0, 5);
 
         Comment comment = new Comment(savedPost, savedMember, content);
         commentRepository.save(comment);
 
         //when
-        List<Comment> commentList = commentRepository.findAllByPostId(savedPost.getId());
+        Page<Comment> commentList = commentRepository.findAllByPostId(savedPost.getId(), pageable);
 
         //then
-        assertThat(commentList.size()).isEqualTo(2);
+        assertThat(commentList.getSize()).isEqualTo(2);
     }
 
     @DisplayName("하나의 게시물의 댓글을 모두 조회하는 테스트(댓글이 존재하지 않을 때)")
@@ -96,9 +100,10 @@ class CommentRepositoryTest {
     public void shouldReturnEmptyListWhenEntityDoesNotExist() throws Exception {
         //given
         commentRepository.delete(savedComment);
+        Pageable pageable = PageRequest.of(0, 5);
 
         //when
-        List<Comment> commentList = commentRepository.findAllByPostId(savedPost.getId());
+        Page<Comment> commentList = commentRepository.findAllByPostId(savedPost.getId(), pageable);
 
         //then
         assertThat(commentList).isEmpty();

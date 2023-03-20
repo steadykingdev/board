@@ -16,10 +16,10 @@ import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
@@ -28,6 +28,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,7 +63,7 @@ class PostControllerTest {
         JwtPayload jwtPayload = new JwtPayload(1L, "testMember", Role.ROLE_USER);
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/posts")
+        mockMvc.perform(post("/api/posts")
                         .requestAttr("user", jwtPayload)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
@@ -83,7 +84,7 @@ class PostControllerTest {
         JwtPayload jwtPayload = new JwtPayload(1L, "testMember", Role.ROLE_USER);
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/posts")
+        mockMvc.perform(post("/api/posts")
                         .requestAttr("user", jwtPayload)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
@@ -101,7 +102,7 @@ class PostControllerTest {
         JwtPayload jwtPayload = new JwtPayload(1L, "testMember", Role.ROLE_USER);
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/posts")
+        mockMvc.perform(post("/api/posts")
                         .requestAttr("user", jwtPayload)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
@@ -119,10 +120,12 @@ class PostControllerTest {
         PostResponse postResponse = new PostResponse(1L, "testTitle", "testContent", "test", localDateTime);
 
         //when then
-        when(postService.getPostList()).thenReturn(List.of(postResponse));
+        when(postService.getPostList(any(Pageable.class))).thenReturn(List.of(postResponse));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/list"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(get("/api/posts/list")
+                        .param("page", "0")
+                        .param("size", "5"))
+                .andExpect(status().isOk());
     }
 
     @DisplayName("게시물 조회 성공 테스트")
@@ -135,8 +138,8 @@ class PostControllerTest {
         //when, then
         when(postService.getPost(anyLong())).thenReturn(postResponse);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/post/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(get("/api/post/1"))
+                .andExpect(status().isOk());
     }
 
     @DisplayName("게시물 조회 실패 테스트(게시물 id 조회)")
@@ -145,9 +148,9 @@ class PostControllerTest {
         //when, then
         when(postService.getPost(anyLong())).thenThrow(new PostNotFoundException("존재하지 않는 게시물입니다."));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/post/1"))
+        mockMvc.perform(get("/api/post/1"))
                 .andExpect(jsonPath("message").value("존재하지 않는 게시물입니다."))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @DisplayName("게시물 수정 성공 테스트")
@@ -158,7 +161,7 @@ class PostControllerTest {
         JwtPayload jwtPayload = new JwtPayload(1L, "testMember", Role.ROLE_USER);
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/posts/1")
+        mockMvc.perform(put("/api/posts/1")
                         .requestAttr("user", jwtPayload)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
@@ -179,7 +182,7 @@ class PostControllerTest {
         JwtPayload jwtPayload = new JwtPayload(1L, "testMember", Role.ROLE_USER);
 
         //when then
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/posts/1")
+        mockMvc.perform(put("/api/posts/1")
                         .requestAttr("user", jwtPayload)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
@@ -193,7 +196,7 @@ class PostControllerTest {
         JwtPayload jwtPayload = new JwtPayload(1L, "testMember", Role.ROLE_USER);
 
         //when, then
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/posts/1")
+        mockMvc.perform(delete("/api/posts/1")
                         .requestAttr("user", jwtPayload))
                 .andExpect(status().isOk());
     }

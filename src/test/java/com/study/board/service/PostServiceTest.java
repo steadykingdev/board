@@ -16,6 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -85,14 +89,19 @@ class PostServiceTest {
     public void getPostListSuccessTest() throws Exception {
         //given
         List<Post> postList = new ArrayList<>();
-        postList.add(post);
+        for (int i = 0; i < 30; i++) {
+            postList.add(post);
+        }
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<Post> page = new PageImpl<>(postList, pageable, 30);
+
+        when(postRepository.findAll(any(Pageable.class))).thenReturn(page);
 
         //when
-        when(postRepository.findAll()).thenReturn(postList);
-        List<PostResponse> postResponseList = postService.getPostList();
+        List<PostResponse> postResponseList = postService.getPostList(pageable);
 
         //then
-        assertThat(postResponseList.size()).isEqualTo(1);
+        assertThat(postResponseList.size()).isEqualTo(5);
     }
 
     @DisplayName("게시물 조회 성공 테스트")
